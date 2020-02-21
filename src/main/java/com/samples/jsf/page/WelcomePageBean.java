@@ -5,8 +5,14 @@
  */
 package com.samples.jsf.page;
 
+import com.samples.jsf.bean.SampleViewScopedBean;
+import java.security.Principal;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -19,6 +25,18 @@ public class WelcomePageBean {
     private String welcomeUserName;
     private String completedGreeting;
 
+    @Inject
+    SampleViewScopedBean viewBean;
+    
+    @Inject
+    HttpSession session;
+    
+    @Inject
+    ServletContext servContext;
+    
+    @Inject
+    Principal currentUser;
+    
     /**
      * @return the welcomeUserName
      */
@@ -49,5 +67,17 @@ public class WelcomePageBean {
     
     public void sayHello() {
         completedGreeting = "Hello, " + welcomeUserName;
+    }
+    
+    public String navigateToFlashPage() {
+        FacesContext.getCurrentInstance().
+                getExternalContext().getFlash().
+                put("transmittedVariable", viewBean.getDogs().get(0));
+        return "flashscope.xhtml?faces-redirect=true";
+    }
+    
+    public void isRefreshed() {
+        FacesContext.getCurrentInstance().isPostback();
+        FacesContext.getCurrentInstance().validationFailed();
     }
 }
